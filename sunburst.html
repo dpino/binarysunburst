@@ -2,14 +2,28 @@
 <meta charset="utf-8">
 <style>
 
-path {
-  stroke: #fff;
-  fill-rule: evenodd;
-}
+    path {
+      stroke: #fff;
+      fill-rule: evenodd;
+    }
+
+    div.tooltip {   
+      position: absolute;           
+      text-align: center;           
+      padding: 3px;             
+      font: 12px sans-serif;        
+      background: gold;   
+      border-radius: 3px;           
+      border-color: black;
+      pointer-events: none;         
+    }
 
 </style>
+
 <body>
+
 <script src="lib/d3.v3.min.js"></script>
+
 <script>
 
 var width = 960,
@@ -23,6 +37,11 @@ var y = d3.scale.sqrt()
     .range([0, radius]);
 
 var color = d3.scale.category20c();
+
+// Add tooltip
+var tooltip = d3.select("body").append("div")   
+    .attr("class", "tooltip")               
+    .style("opacity", 0);
 
 var svg = d3.select("body").append("svg")
     .attr("width", width)
@@ -46,13 +65,27 @@ d3.json("git-data.json", function(error, root) {
     .enter().append("path")
       .attr("d", arc)
       .style("fill", function(d) { return color((d.children ? d : d.parent).name); })
-      .on("click", click);
+      .on("click", click)
+      .on("mouseover", function(d) {  
+        tooltip.transition()        
+          .duration(200)      
+          .style("opacity", .9);      
+        tooltip.html(d.name)  
+          .style("left", (d3.event.pageX + 10) + "px")     
+          .style("top", (d3.event.pageY + 5) + "px");    
+      })                  
+      .on('mouseout',function(){  
+        tooltip.transition()        
+          .duration(500)      
+          .style("opacity", 0);
+      })              
 
   function click(d) {
     path.transition()
       .duration(750)
       .attrTween("d", arcTween(d));
   }
+
 });
 
 d3.select(self.frameElement).style("height", height + "px");
