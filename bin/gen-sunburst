@@ -1,0 +1,28 @@
+#!/usr/bin/perl
+
+use strict;
+
+my $template = "./bin/.template-sunburst";
+
+if (scalar("ARGV") == 0) {
+    errorAndExit("gen-sunburst [nm.out] <output-dir>");
+}
+
+my $nm = $ARGV[0] || "nm.out";
+if (! -f $nm) {
+   errorAndExit("Couldn't find nm.out"); 
+}
+my $output_dir = $ARGV[1] || "output";
+
+`cp -Rf $template $output_dir`;
+`./bin/bloat --nm-output=$nm syms > $output_dir/html/data.json`;
+print "Generated '$output_dir/'\n";
+
+###
+
+sub errorAndExit
+{
+    my($str) = @_;
+    print "$str\n";
+    exit();
+}
