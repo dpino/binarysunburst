@@ -396,8 +396,8 @@ parser.add_option('--strip-prefix', metavar='PATH', action='store',
                   help='strip PATH prefix from paths; e.g. /path/to/src/root')
 parser.add_option('--filter', action='store',
                   help='include only symbols/files matching FILTER')
-parser.add_option('--define-ktree-var', action='store', dest='defineKTreeVar',
-                  default=False)
+parser.add_option('--define-ktree-var', action='store_true',
+                  dest='defineKTreeVar', default=False)
 parser.add_option('--c++filt', action='store', metavar='PATH', dest='cppfilt',
                   default='c++filt', help="Path to c++filt, used to demangle "
                   "symbols that weren't handled by nm. Set to an invalid path "
