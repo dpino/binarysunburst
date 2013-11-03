@@ -4,10 +4,24 @@
     <meta charset="utf-8">
     <style>
 
-    path {
-      stroke: #fff;
-      fill-rule: evenodd;
-    }
+        path {
+          stroke: #fff;
+          fill-rule: evenodd;
+        }
+
+        body {
+          font-family: sans-serif;
+          font-size: 0.8em;
+          margin: 2ex 4ex;
+        }
+
+        h1 {
+          font-weight: normal;
+        }
+
+        p.small {
+            font-size: 10px;
+        }
 
     </style>
     <title>###TITLE###</title>
@@ -15,6 +29,17 @@
 
 <body>
 <script src="lib/d3.v3.min.js"></script>
+
+<h1>###TITLE###</h1>
+
+<p>Prints sizes of the symbols within the symbol table. The total size will always be inferior to the actual size of the binary. Take these sizes as a relative size of the parts of this binary.</p>
+
+<p>Click on a box to <i>zoom in</i>. Click on the outermost box to <i>zoom out</i>.</p>
+
+<div id="chart"></div>
+
+<p class="small">Based on Mike Bostock's <a href="http://bl.ocks.org/mbostock/4063423http://bl.ocks.org/mbostock/4063423">Sunburst</a>.</p>
+
 <script>
 
 var width = 960,
@@ -29,7 +54,7 @@ var y = d3.scale.sqrt()
 
 var color = d3.scale.category20c();
 
-var svg = d3.select("body").append("svg")
+var svg = d3.select("#chart").append("svg")
     .attr("width", width)
     .attr("height", height)
   .append("g")
