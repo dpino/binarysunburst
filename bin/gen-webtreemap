@@ -2,82 +2,52 @@
 
 use strict;
 
-my $template = "./bin/.template-webtreemap";
-my $nm = "nm.out"; 
-my $output_dir = "output";
-my $title = "WebTreeMap";
+use strict;
+use bin::Util qw(parse_args readfile writefile error);
 
-while (@ARGV) {
-    my $arg = shift;
-    if ($arg =~ /--nm-output/) {
-        $nm = shift;
-    }
-    if ($arg =~ /--output-dir/) {
-        $output_dir = shift;
-    }
-    if ($arg =~ /--title/) {
-        $title = shift;
-    }
-    if ($arg =~ /--help/) {
-        help();
-    }
+my($title, $nm, $output_dir, $help) = Util::parse_args(@ARGV);
+
+if ($help) {
+    help();
+}
+
+if ($title eq "") {
+    $title = "WebTreeMap";
 }
 
 if (! -f $nm) {
-   error("Couldn't find $nm\n");
+   Util::error("Couldn't find $nm\n");
    help();
 }
 
-`cp -Rf $template $output_dir`;
-print "Generating '$title' from '$nm' into '$output_dir' folder...\n";
-`./bin/bloat --define-ktree-var --nm-output=$nm syms > $output_dir/html/data.json`;
-
-my $index = "$output_dir/html/index.html";
-my $content = readfile($index);
-$content =~ s/###TITLE###/$title/g;
-writefile($content, $index);
+generate_webtreemap($title, $nm, $output_dir);
 
 ###
 
-sub errorAndExit
+sub generate_webtreemap
 {
-    my($str) = @_;
-    error($str);
-    exit();
-}
+    my($title, $nm, $output_dir) = @_;
 
-sub error
-{
-    my($str) = @_;
-    print "$str\n";
+    # Copy template 
+    my $template = "./bin/.template-webtreemap";
+    `cp -Rf $template $output_dir`;
+
+    # Generate data file
+    print "Generating '$title' from '$nm' into '$output_dir' folder...\n";
+    `./bin/bloat --define-ktree-var --nm-output=$nm syms > $output_dir/html/data.json`;
+
+    # Replace title in output file
+    my $index = "$output_dir/html/index.html";
+    my $content = Util::readfile($index);
+    $content =~ s/###TITLE###/$title/g;
+    Util::writefile($content, $index);
 }
 
 sub help
 {
-    print "gen-treemap\n";
+    print "gen-webtreemap\n";
     print "\t--nm-output=<path>\tPath to file generated with \"nm -C -S -l\"\n";
     print "\t--output-dir=<path>\tPath to folder where to place results (html + data)\n";
     print "\t--title=\"<TEXT>\"\tTitle of the chart\n";
     exit();
-}
-
-sub readfile
-{
-    my($filename) = @_;
-
-    my $content = do {
-        local $/ = undef;
-        open FILE, "<$filename";
-        <FILE>
-    };
-    return $content;
-}
-
-sub writefile
-{
-    my($content, $filename) = @_;
-
-    open FILE, ">$filename";
-    print FILE $content;
-    close FILE;
 }

@@ -1,28 +1,51 @@
 #!/usr/bin/perl
 
 use strict;
+use bin::Util qw(parse_args readfile writefile error);
 
-my $template = "./bin/.template-sunburst";
+my($title, $nm, $output_dir, $help) = Util::parse_args(@ARGV);
 
-if (scalar("ARGV") == 0) {
-    errorAndExit("gen-sunburst [nm.out] <output-dir>");
+if ($help) {
+    help();
 }
 
-my $nm = $ARGV[0] || "nm.out";
+if ($title eq "") {
+    $title = "Sunburst";
+}
+
 if (! -f $nm) {
-   errorAndExit("Couldn't find nm.out"); 
+   error("Couldn't find $nm\n");
+   help();
 }
-my $output_dir = $ARGV[1] || "output";
 
-`cp -Rf $template $output_dir`;
-`./bin/bloat --nm-output=$nm syms > $output_dir/html/data.json`;
-print "Generated '$output_dir/'\n";
+generate_sunburst($title, $nm, $output_dir);
 
 ###
 
-sub errorAndExit
+sub generate_sunburst
 {
-    my($str) = @_;
-    print "$str\n";
+    my($title, $nm, $output_dir) = @_;
+
+    # Copy template 
+    my $template = "./bin/.template-sunburst";
+    `cp -Rf $template $output_dir`;
+
+    # Generate data file
+    print "Generating '$title' from '$nm' into '$output_dir' folder...\n";
+    `./bin/bloat --nm-output=$nm syms > $output_dir/data.json`;
+
+    # Replace title in output file
+    my $index = "$output_dir/sunburst.html";
+    my $content = Util::readfile($index);
+    $content =~ s/###TITLE###/$title/g;
+    Util::writefile($content, $index);
+}
+
+sub help
+{
+    print "gen-sunburst\n";
+    print "\t--nm-output=<path>\tPath to file generated with \"nm -C -S -l\"\n";
+    print "\t--output-dir=<path>\tPath to folder where to place results (html + data)\n";
+    print "\t--title=\"<TEXT>\"\tTitle of the chart\n";
     exit();
 }

@@ -1,13 +1,18 @@
 <!DOCTYPE html>
-<meta charset="utf-8">
-<style>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
 
-path {
-  stroke: #fff;
-  fill-rule: evenodd;
-}
+    path {
+      stroke: #fff;
+      fill-rule: evenodd;
+    }
 
-</style>
+    </style>
+    <title>###TITLE###</title>
+</head>
+
 <body>
 <script src="lib/d3.v3.min.js"></script>
 <script>
@@ -39,8 +44,7 @@ var arc = d3.svg.arc()
     .innerRadius(function(d) { return Math.max(0, y(d.y)); })
     .outerRadius(function(d) { return Math.max(0, y(d.y + d.dy)); });
 
-// d3.json("flare.json", function(error, root) {
-d3.json("git-data.json", function(error, root) {
+d3.json("data.json", function(error, root) {
   var path = svg.selectAll("path")
       .data(partition.nodes(root))
     .enter().append("path")
@@ -71,3 +75,5 @@ function arcTween(d) {
 
 </script>
 
+</body>
+</html>

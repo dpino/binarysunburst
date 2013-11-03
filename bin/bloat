@@ -397,7 +397,7 @@ parser.add_option('--strip-prefix', metavar='PATH', action='store',
 parser.add_option('--filter', action='store',
                   help='include only symbols/files matching FILTER')
 parser.add_option('--define-ktree-var', action='store', dest='defineKTreeVar',
-                  default=True)
+                  default=False)
 parser.add_option('--c++filt', action='store', metavar='PATH', dest='cppfilt',
                   default='c++filt', help="Path to c++filt, used to demangle "
                   "symbols that weren't handled by nm. Set to an invalid path "
